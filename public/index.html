@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no"
+    />
+    <title>Shifty Dungeon</title>
+    <style type="text/css">
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #frame {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 32px;
+        background-color: transparent;
+        z-index: 2;
+        -webkit-app-region: drag;
+      }
+
+      body {
+        touch-action: none;
+        margin: 0;
+        border: 0 none;
+        padding: 0;
+        text-align: center;
+        background-color: black;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #canvas {
+        margin: 0;
+        color: white;
+      }
+
+      #canvas:focus {
+        outline: none;
+      }
+
+      #loader {
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #loader video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="frame"></div>
+    <canvas
+      id="canvas"
+      class="hidden"
+    >
+      HTML5 canvas appears to be unsupported in the current browser.<br />
+      Please try updating or use a different browser.
+    </canvas>
+
+    <div
+      id="loader"
+      oncontextmenu="event.preventDefault();"
+    >
+      <video
+        id="splash"
+        src="./splash.mp4"
+        autoplay
+      ></video>
+    </div>
+
+    <!-- Godot stuff -->
+    <script
+      type="text/javascript"
+      src="./index.js"
+    ></script>
+    <script type="text/javascript">
+      const loader = document.getElementById("loader");
+      const canvas = document.getElementById("canvas");
+
+      const splash = document.getElementById("splash");
+      const markers = [
+        { start: 0.4, end: 0.92 },
+        { start: 2.2, end: 2.75 },
+        { start: 3.3, end: 4.15 },
+        { start: 4.45, end: Infinity },
+      ];
+
+      function findNextMarker(currentTime) {
+        if (currentTime < markers[0].start) return markers[0];
+
+        return markers.find(
+          (marker) => currentTime > marker.start && currentTime < marker.end,
+        );
+      }
+
+      const engine = new Engine({
+        args: [],
+        canvasResizePolicy: 2,
+        executable: "index",
+        experimentalVK: false,
+        fileSizes: { "index.pck": 12912672, "index.wasm": 14065065 },
+        focusCanvas: true,
+        gdextensionLibs: [],
+      });
+
+      Promise.all([engine.init("index"), engine.preloadFile("index.pck")]).then(
+        async () => {
+          const nextMarker = findNextMarker(splash.currentTime);
+          const timeToLaunch = nextMarker.start - splash.currentTime;
+
+          setTimeout(async () => {
+            await engine.start({ args: ["--main-pack", "index.pck"] });
+            splash.remove();
+            canvas.classList.remove("hidden");
+            canvas.focus();
+          }, timeToLaunch * 1000);
+        },
+      );
+    </script>
+    <!-- Godot stuff end -->
+
+    <script type="module">
+      const platformInfo = await ext.runtime.getPlatformInfo();
+      const webview = await ext.webviews.getCurrent();
+      const window = await ext.webviews.getAttachedWindow(webview.id);
+      const insetSize = await ext.windows.getInsetSize(window.id);
+
+      if (platformInfo.os !== "mac" && insetSize) {
+        document.getElementById("frame").style.right = `${insetSize.width}px`;
+      }
+    </script>
+    <script type="module">
+      window.quit = async () => {
+        await ext.runtime.sendMessage("quit");
+      };
+    </script>
+  </body>
+</html>

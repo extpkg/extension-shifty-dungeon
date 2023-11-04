@@ -1,0 +1,36 @@
+{
+  "manifest_version": "ext-v1",
+  "name": "Shifty Dungeon",
+  "short_name": "Shifty Dungeon",
+  "description": "Extension description",
+  "version": "1.0.0",
+  "author": "EXT, Inc.",
+  "icons": {
+    "128": "./assets/128.png",
+    "banner": "./assets/banner.png",
+    "background": "./assets/background.png"
+  },
+  "scripts": ["main.js"],
+  "modules": {
+    "runtime": {
+      "permissions": []
+    },
+    "tabs": {
+      "permissions": []
+    },
+    "windows": {
+      "permissions": []
+    },
+    "webviews": {
+      "permissions": []
+    },
+    "websessions": {
+      "permissions": [],
+      "optional_permissions": [
+        "create.persistent",
+        "request.read",
+        "request.modify"
+      ]
+    }
+  }
+}
