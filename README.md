@@ -1,6 +1,6 @@
 # Shifty Dungeon
 
-Extension description
+Switch places with the Dungeon Master and race for hidden treasure!
 
 ## Build
 
