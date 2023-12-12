@@ -13,3 +13,6 @@ Switch places with the Dungeon Master and race for hidden treasure!
 
 Run `npm run dev` to watch `src` and `public` directories and rebuild the
 project on changes
+
+## Source
+https://github.com/gheja/shifty-dungeon
